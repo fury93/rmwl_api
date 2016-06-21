@@ -18,8 +18,12 @@ return [
     ],
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'rest\versions\v1\models\User',
             'enableSession' => false,
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            'defaultRoles' => ['guest', 'employee', 'admin', 'patient'],
         ],
         'response' => [
 //            'format' => yii\web\Response::FORMAT_JSON,

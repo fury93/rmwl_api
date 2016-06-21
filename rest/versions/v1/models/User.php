@@ -1,5 +1,5 @@
 <?php
-namespace common\models;
+namespace rest\versions\v1\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -17,6 +17,7 @@ use yii\filters\RateLimitInterface;
  * @property string $email
  * @property string $auth_key
  * @property integer $status
+ * @property integer $role
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
@@ -24,7 +25,15 @@ use yii\filters\RateLimitInterface;
 class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
     const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
+    const STATUS_ACTIVE = 1;
+
+    /**
+     * Id roles in DB
+     */
+    const ROLE_ADMIN = 'admin';
+    const ROLE_EMPLOYEE = 'employee';
+    const ROLE_PATIENT = 'patient';
+    const ROLE_GUEST = 'guest';
 
     /**
      * @inheritdoc
@@ -215,5 +224,16 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     {
         \Yii::$app->cache->set($request->getPathInfo() . $request->getMethod() . '_remaining', $allowance);
         \Yii::$app->cache->set($request->getPathInfo() . $request->getMethod() . '_ts', $timestamp);
+    }
+
+    /**
+     * @return bool
+     */
+    public function removeAccessToken()
+    {
+        $this->auth_key = null;
+        $this->save(false);
+
+        return true;
     }
 }
