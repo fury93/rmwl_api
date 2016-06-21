@@ -1,4 +1,5 @@
 <?php
+
 namespace rest\versions\v1\models;
 
 use Yii;
@@ -235,5 +236,15 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         $this->save(false);
 
         return true;
+    }
+
+    /**
+     * Finds user by email
+     *
+     * @param string $email
+     * @return static|null
+     */
+    public static function findByEmail($email) {
+        return static::findOne(['email' => $email]);
     }
 }

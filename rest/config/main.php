@@ -49,11 +49,19 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['v1/post', 'v1/comment', 'v2/post']],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/user',
+                    ],
+                    'pluralize' => false
+                ],
                 'OPTIONS v1/user/login' => 'v1/user/login',
                 'POST v1/user/login' => 'v1/user/login',
-                'POST v2/user/login' => 'v2/user/login',
-                'OPTIONS v2/user/login' => 'v2/user/login',
+                'POST v1/user/register' => 'v1/user/register',
+                'POST v1/user/update/<id:\d+>'=> 'v1/user/update',
+                'POST v1/user/delete/<id:\d+>'=> 'v1/user/delete',
+                'GET v1/user/view/<id:\d+>'=> 'v1/user/view',
             ],
         ],
     ],

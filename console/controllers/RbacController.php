@@ -2,6 +2,7 @@
 
 namespace console\controllers;
 
+use common\rbac\UserUpdateRule;
 use rest\versions\v1\models\User;
 use Yii;
 use yii\console\Controller;
@@ -9,7 +10,6 @@ use \common\rbac\UserGroupRule;
 
 class RbacController extends Controller
 {
-
     public function actionInit()
     {
         $authManager = \Yii::$app->authManager;
@@ -17,6 +17,10 @@ class RbacController extends Controller
 
         $userGroupRule = new UserGroupRule();
         $authManager->add($userGroupRule);
+
+        //Add rules
+        $ruleUserUpdate = new UserUpdateRule();
+        $authManager->add($ruleUserUpdate);
 
         // Create roles
         $guest = $authManager->createRole(User::ROLE_GUEST);
@@ -33,32 +37,38 @@ class RbacController extends Controller
         $authManager->add($patient);
         $authManager->add($admin);
 
+        //Inherit rules
         $authManager->addChild($admin, $employee);
         $authManager->addChild($admin, $patient);
 
-        //Create permissions
+        //Create permissions for User
         $loginUser = $authManager->createPermission('loginUser');
+        $registerUser = $authManager->createPermission('registerUser');
+        $deleteUser = $authManager->createPermission('deleteUser');
+        $viewUser = $authManager->createPermission('viewUser');
+        $updateUser = $authManager->createPermission('updateUser');
+        $updateUser->ruleName = $ruleUserUpdate->name;
 
-        //Add permissions
+        //Add permissions for User
         $authManager->add($loginUser);
+        $authManager->add($registerUser);
+        $authManager->add($updateUser);
+        $authManager->add($deleteUser);
+        $authManager->add($viewUser);
 
         //Guest permission
         $authManager->addChild($guest, $loginUser);
+        $authManager->addChild($guest, $registerUser);
 
+        //Patient permission
+        $authManager->addChild($patient, $updateUser);
 
-        //test permission
-        /*        $createPost = $authManager->createPermission('createPost');
-                $createPost->description = 'Create a post';
-                $authManager->add($createPost);
+        //Employee permission
+        $authManager->addChild($employee, $updateUser);
 
-                $updatePost = $authManager->createPermission('updatePost');
-                $updatePost->description = 'Update post';
-                $authManager->add($updatePost);
-
-                $authManager->addChild($admin, $updatePost);
-                $authManager->addChild($admin, $employee);*/
-
-        //$authManager->assign($admin, 1);
+        //Admin permission
+        $authManager->addChild($admin, $deleteUser);
+        $authManager->addChild($admin, $viewUser);
     }
 
 }

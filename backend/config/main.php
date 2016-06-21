@@ -17,6 +17,9 @@ return [
             'identityClass' => 'rest\versions\v1\models\User',
             'enableAutoLogin' => true,
         ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
