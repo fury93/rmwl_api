@@ -13,31 +13,40 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
+use yii\rest\ActiveController;
+use \Yii;
 
 /**
  * Class UserController
  * @package rest\versions\v1\controllers
  */
-class UserController extends Controller
+class UserController extends ActiveController
 {
     public $modelClass = 'rest\versions\v1\models\UserForm';
 
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        unset($behaviors['rateLimiter']);
+        //unset($behaviors['rateLimiter']);
+        // remove authentication filter
+
+        $auth = $behaviors['authenticator'];
+        unset($behaviors['authenticator']);
+
+        // add CORS filter
+        $behaviors['corsFilter'] = [
+            'class' => \yii\filters\Cors::className(),
+        ];
+
+        // re-add authentication filter
+        $behaviors['authenticator'] = $auth;
+        // avoid authentication on CORS-pre-flight requests (HTTP OPTIONS method)
+        //$behaviors['authenticator']['except'] = ['options'];
 
         $behaviors['authenticator'] = [
-            /*'class' => QueryParamAuth::className(),
-            'except' => ['login', 'register', 'password-restore', 'check-authentication', 'update']*/
             'class' => HttpBearerAuth::className(),
-            'except' => ['login', 'register', 'password-restore', 'check-authentication'],
-            /*'class' => CompositeAuth::className(),
-            'authMethods' => [
-                HttpBasicAuth::className(),
-                HttpBearerAuth::className(),
-                QueryParamAuth::className(),
-            ],*/
+            'except' => ['login', 'register', 'password-restore', 'check-authentication', 'options'],
         ];
 
         $behaviors['verbs'] = [
@@ -53,9 +62,11 @@ class UserController extends Controller
     public function beforeAction($action)
     {
         $controller = \Yii::$app->controller->id;
+        $headers = Yii::$app->response->headers;
 
         if (parent::beforeAction($action)) {
-            if (!\Yii::$app->user->can($action->id . ucfirst($controller))) {
+            //hack for options request
+            if ($action->id !== 'options' && !\Yii::$app->user->can($action->id . ucfirst($controller))) {
                 throw new ForbiddenHttpException('Access denied ' . $action->id . ucfirst($controller));
             }
 
@@ -87,11 +98,22 @@ class UserController extends Controller
     public function actionLogin()
     {
         $model = new LoginForm();
+        $params = \Yii::$app->request->getBodyParams();
 
-        if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '') && $model->login()) {
-            return \Yii::$app->user->identity->getAuthKey();
+        if ($model->load($params, '') && $model->login()) {
+            //$authKey = \Yii::$app->user->identity->getAuthKey();
+            $userData = UserForm::prepareUserDate();
+            return ResponseHelper::success(['user' => $userData]);
         } else {
-            return $model;
+            return ResponseHelper::failed('Password or login not correct');
+            /*return \Yii::createObject([
+                'class' => 'yii\web\Response',
+                'format' => \yii\web\Response::FORMAT_JSON,
+                'data' => [
+                    'message' => 'Password or login not correct',
+                    'code' => 401,
+                ],
+            ]);*/
         }
     }
 
@@ -100,8 +122,10 @@ class UserController extends Controller
      */
     public function actionLogout()
     {
-        $user = Yii::$app->user->identity;
-        $user->removeAccessToken();
+        $user = \Yii::$app->user->identity;
+        if($user) {
+            $user->removeAccessToken();
+        }
 
         return \Yii::$app->user->logout();
     }

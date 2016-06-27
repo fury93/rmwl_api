@@ -239,6 +239,17 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
+     * @return bool
+     */
+    public function updateAccessToken()
+    {
+        $this->generateAuthKey();
+        $this->save(false);
+
+        return true;
+    }
+
+    /**
      * Finds user by email
      *
      * @param string $email

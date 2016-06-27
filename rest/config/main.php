@@ -26,7 +26,7 @@ return [
             'defaultRoles' => ['guest', 'employee', 'admin', 'patient'],
         ],
         'response' => [
-//            'format' => yii\web\Response::FORMAT_JSON,
+            'format' => yii\web\Response::FORMAT_JSON,
             'charset' => 'UTF-8',
         ],
         'log' => [
@@ -42,6 +42,7 @@ return [
             'enableCookieValidation' => false,
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
+                'application/x-www-form-urlencoded' => 'yii\web\JsonParser'
             ],
         ],
         'urlManager' => [
@@ -52,16 +53,24 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user',
+                        'v1/user'
                     ],
-                    'pluralize' => false
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST login' => 'login',
+                        //'OPTIONS v1/user/logout' => 'options',
+                        'POST logout' => 'logout',
+                        'OPTIONS logout' => 'options', //todo CORS problem with options requests
+//                        'POST register' => 'register',
+                        /*'POST v1/user/update/<id:\d+>'=> 'v1/user/update',
+                        'POST v1/user/delete/<id:\d+>'=> 'v1/user/delete',
+                        'GET v1/user/view/<id:\d+>'=> 'v1/user/view',*/
+                    ],
                 ],
-                'OPTIONS v1/user/login' => 'v1/user/login',
-                'POST v1/user/login' => 'v1/user/login',
-                'POST v1/user/register' => 'v1/user/register',
-                'POST v1/user/update/<id:\d+>'=> 'v1/user/update',
-                'POST v1/user/delete/<id:\d+>'=> 'v1/user/delete',
-                'GET v1/user/view/<id:\d+>'=> 'v1/user/view',
+                /*'<controller:\w+>/<id:\d+>' => '<controller>/view',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>'*/
+
             ],
         ],
     ],

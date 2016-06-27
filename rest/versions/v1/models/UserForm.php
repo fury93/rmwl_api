@@ -108,4 +108,21 @@ class UserForm extends User
 
         return false;
     }
+
+    /**
+     * Return user data after authorization
+     *
+     * @return array
+     */
+    public static function prepareUserDate()
+    {
+        $userData = \Yii::$app->user->identity;
+
+        return [
+            'user' => $userData->username,
+            'id' => $userData->id,
+            'userRole' => $userData->role,
+            'token' => $userData->auth_key
+        ];
+    }
 }
