@@ -1,6 +1,7 @@
 <?php
 namespace rest\versions\v1\controllers;
 
+use rest\versions\v1\helper\ActionsHelper;
 use rest\versions\v1\helper\ResponseHelper;
 use rest\versions\v1\models\LoginForm;
 use rest\versions\v1\models\User;
@@ -59,21 +60,14 @@ class UserController extends ActiveController
         return $behaviors;
     }
 
+    /**
+     * @param $action
+     * @return bool
+     * @throws \rest\versions\v1\helper\ForbiddenHttpException
+     */
     public function beforeAction($action)
     {
-        $controller = \Yii::$app->controller->id;
-        $headers = Yii::$app->response->headers;
-
-        if (parent::beforeAction($action)) {
-            //hack for options request
-            if ($action->id !== 'options' && !\Yii::$app->user->can($action->id . ucfirst($controller))) {
-                throw new ForbiddenHttpException('Access denied ' . $action->id . ucfirst($controller));
-            }
-
-            return true;
-        } else {
-            return false;
-        }
+        return parent::beforeAction($action) ? ActionsHelper::ifActionAccess($action) : false;
     }
 
     /**
@@ -83,7 +77,7 @@ class UserController extends ActiveController
     {
         $actions = parent::actions();
 
-        unset($actions['index']);
+        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
         unset($actions['update']);
         unset($actions['create']);
 
@@ -101,20 +95,11 @@ class UserController extends ActiveController
         $params = \Yii::$app->request->getBodyParams();
 
         if ($model->load($params, '') && $model->login()) {
-            //$authKey = \Yii::$app->user->identity->getAuthKey();
             $userData = UserForm::prepareUserDate();
             return ResponseHelper::success(['user' => $userData]);
-        } else {
-            return ResponseHelper::failed('Password or login not correct');
-            /*return \Yii::createObject([
-                'class' => 'yii\web\Response',
-                'format' => \yii\web\Response::FORMAT_JSON,
-                'data' => [
-                    'message' => 'Password or login not correct',
-                    'code' => 401,
-                ],
-            ]);*/
         }
+
+        return ResponseHelper::failed('Password or login not correct');
     }
 
     /**
@@ -162,18 +147,18 @@ class UserController extends ActiveController
      *
      * @return UserForm|string
      */
-    public function actionRegister()
+    public function actionCreate()
     {
         $model = new UserForm();
-        $model->scenario  = UserForm::SCENARIO_REGISTER;
+//        $model->scenario  = UserForm::SCENARIO_REGISTER;
 
         $params = \Yii::$app->getRequest()->getBodyParams();
 
         if ($model->load($params, '') && $model->createUser()) {
-            return ResponseHelper::success($model->auth_key);
-        } else {
-            return ResponseHelper::failed($model->getErrors());
+            return ResponseHelper::success(UserForm::prepareUserDate($model));
         }
+
+        return ResponseHelper::failed($model->getErrors());
     }
 
     /**
@@ -235,5 +220,17 @@ class UserController extends ActiveController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * Prepare data for index
+     *
+     * @return array
+     */
+    public function prepareDataProvider()
+    {
+        $users = UserForm::getUserData();
+
+        return ResponseHelper::success(['users' =>$users]);
     }
 }

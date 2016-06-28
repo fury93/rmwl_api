@@ -42,38 +42,41 @@ class RbacController extends Controller
         $authManager->addChild($admin, $patient);
 
         //Create permissions for User
+        $indexUser = $authManager->createPermission('indexUser');
         $loginUser = $authManager->createPermission('loginUser');
         $logoutUser = $authManager->createPermission('logoutUser');
-        $registerUser = $authManager->createPermission('registerUser');
+        $createUser = $authManager->createPermission('createUser');
         $deleteUser = $authManager->createPermission('deleteUser');
         $viewUser = $authManager->createPermission('viewUser');
         $updateUser = $authManager->createPermission('updateUser');
         $updateUser->ruleName = $ruleUserUpdate->name;
 
         //Add permissions for User
+        $authManager->add($indexUser);
         $authManager->add($loginUser);
         $authManager->add($logoutUser);
-        $authManager->add($registerUser);
+        $authManager->add($createUser);
         $authManager->add($updateUser);
         $authManager->add($deleteUser);
         $authManager->add($viewUser);
 
         //Guest permission
         $authManager->addChild($guest, $loginUser);
-        $authManager->addChild($guest, $registerUser);
+
 
         //Patient permission
-        $authManager->addChild($patient, $updateUser);
         $authManager->addChild($patient, $logoutUser);
 
         //Employee permission
-        $authManager->addChild($employee, $updateUser);
         $authManager->addChild($employee, $logoutUser);
 
         //Admin permission
-        $authManager->addChild($admin, $deleteUser);
-        $authManager->addChild($admin, $viewUser);
         $authManager->addChild($admin, $logoutUser);
+        $authManager->addChild($admin, $indexUser);
+        $authManager->addChild($guest, $createUser);
+        $authManager->addChild($employee, $updateUser);
+        $authManager->addChild($admin, $viewUser);
+        $authManager->addChild($admin, $deleteUser);
     }
 
 }

@@ -21,8 +21,11 @@ use yii\db\ActiveRecord;
  */
 class UserForm extends User
 {
-    const SCENARIO_REGISTER = 'register';
+//    const SCENARIO_REGISTER = 'register';
     const SCENARIO_LOGIN = 'login';
+
+    //Status field in db
+    const ACTIVE_STATUS = 1;
 
     public $password;
 
@@ -42,12 +45,12 @@ class UserForm extends User
         return [
             ['email', 'isEmailUnique'],
             ['email', 'email'],
-            [['username', 'auth_key', 'password_hash', 'email'], 'required'],
+            [['username', 'auth_key', 'password_hash', 'email', 'role'], 'required'],
             [['status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'role'], 'string', 'max' => 255],
             [['auth_key'], 'string', 'max' => 32],
             [['username', 'password'], 'required', 'on' => self::SCENARIO_LOGIN],
-            [['username', 'password','email'], 'required', 'on' => self::SCENARIO_REGISTER],
+//            [['username', 'password','email'], 'required', 'on' => self::SCENARIO_REGISTER],
         ];
     }
 
@@ -58,7 +61,7 @@ class UserForm extends User
     {
         $scenarios = parent::scenarios();
         $scenarios[self::SCENARIO_LOGIN] = ['email', 'password'];
-        $scenarios[self::SCENARIO_REGISTER] = ['username', 'email', 'password'];
+//        $scenarios[self::SCENARIO_REGISTER] = ['username', 'email', 'password'];
 
         return $scenarios;
     }
@@ -78,12 +81,12 @@ class UserForm extends User
         }
     }
 
+    /**
+     * @return bool
+     */
     public function createUser()
     {
         $this->generateAuthKey();
-        /*if(isset($this->password)) {
-            $this->setPassword($this->password);
-        }*/
         $this->setPassword($this->password);
 
         if($this->validate() &&  $this->save()) {
@@ -114,15 +117,43 @@ class UserForm extends User
      *
      * @return array
      */
-    public static function prepareUserDate()
+    public static function prepareUserDate($userData = null)
     {
-        $userData = \Yii::$app->user->identity;
+        if(!$userData) {
+            $userData = \Yii::$app->user->identity;
+        }
 
         return [
             'user' => $userData->username,
             'id' => $userData->id,
-            'userRole' => $userData->role,
-            'token' => $userData->auth_key
+            'role' => $userData->role,
+            'token' => $userData->auth_key,
+            'email' => $userData->email
         ];
+    }
+
+    /**
+     * Filter user data
+     * @return array
+     */
+    public static function getUserData()
+    {
+        $usersData = [];
+        $users = UserForm::findAll([
+            'status' => self::ACTIVE_STATUS,
+        ]);
+
+        foreach($users as $user) {
+            $userInfo = [
+                'user' => $user->username,
+                'id' => $user->id,
+                'role' => $user->role,
+                'email' => $user->email
+            ];
+
+            array_push($usersData, $userInfo);
+        }
+
+        return $usersData;
     }
 }

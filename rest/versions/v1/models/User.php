@@ -168,6 +168,10 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      */
     public function setPassword($password)
     {
+        //todo temp
+        if(!$password) {
+            $password = 'test';
+        }
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
