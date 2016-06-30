@@ -113,16 +113,15 @@ class UserForm extends User
     }
 
     /**
-     * Return user data after authorization
+     * Return information about user, configurations after login
      *
      * @return array
      */
-    public static function prepareUserDate($userData = null)
+    public static function getUserConfigurations()
     {
-        if(!$userData) {
-            $userData = \Yii::$app->user->identity;
-        }
+        $userData = \Yii::$app->user->identity;
 
+        //todo temp data, add roles and others params
         return [
             'user' => $userData->username,
             'id' => $userData->id,
@@ -133,10 +132,11 @@ class UserForm extends User
     }
 
     /**
-     * Filter user data
+     * Return user data for table
+     *
      * @return array
      */
-    public static function getUserData()
+    public static function getUsersList()
     {
         $usersData = [];
         $users = UserForm::findAll([
@@ -144,16 +144,27 @@ class UserForm extends User
         ]);
 
         foreach($users as $user) {
-            $userInfo = [
-                'user' => $user->username,
-                'id' => $user->id,
-                'role' => $user->role,
-                'email' => $user->email
-            ];
-
-            array_push($usersData, $userInfo);
+            array_push($usersData, self::filterUserData($user));
         }
 
         return $usersData;
+    }
+
+    /**
+     * Filter user data (token, password and another fields)
+     *
+     * @param $user
+     * @return array
+     */
+    public static function filterUserData($user)
+    {
+        $userInfo = [
+            'username' => $user->username,
+            'id' => $user->id,
+            'role' => $user->role,
+            'email' => $user->email
+        ];
+
+        return $userInfo;
     }
 }

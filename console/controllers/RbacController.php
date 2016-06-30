@@ -48,15 +48,15 @@ class RbacController extends Controller
         $createUser = $authManager->createPermission('createUser');
         $deleteUser = $authManager->createPermission('deleteUser');
         $viewUser = $authManager->createPermission('viewUser');
-        $updateUser = $authManager->createPermission('updateUser');
-        $updateUser->ruleName = $ruleUserUpdate->name;
+        $editUser = $authManager->createPermission('editUser');
+        $editUser->ruleName = $ruleUserUpdate->name;
 
         //Add permissions for User
         $authManager->add($indexUser);
         $authManager->add($loginUser);
         $authManager->add($logoutUser);
         $authManager->add($createUser);
-        $authManager->add($updateUser);
+        $authManager->add($editUser);
         $authManager->add($deleteUser);
         $authManager->add($viewUser);
 
@@ -74,7 +74,7 @@ class RbacController extends Controller
         $authManager->addChild($admin, $logoutUser);
         $authManager->addChild($admin, $indexUser);
         $authManager->addChild($guest, $createUser);
-        $authManager->addChild($employee, $updateUser);
+        $authManager->addChild($employee, $editUser);
         $authManager->addChild($admin, $viewUser);
         $authManager->addChild($admin, $deleteUser);
     }

@@ -55,22 +55,17 @@ return [
                     'controller' => [
                         'v1/user'
                     ],
+                    //'except' => ['update'],
                     'pluralize' => false,
                     'extraPatterns' => [
                         'POST login' => 'login',
-                        //'OPTIONS v1/user/logout' => 'options',
                         'POST logout' => 'logout',
-                        'OPTIONS logout' => 'options', //todo CORS problem with options requests
-//                        'POST register' => 'register',
-                        /*'POST v1/user/update/<id:\d+>'=> 'v1/user/update',
-                        'POST v1/user/delete/<id:\d+>'=> 'v1/user/delete',
-                        'GET v1/user/view/<id:\d+>'=> 'v1/user/view',*/
+                        'POST edit/<id:\d+>' => 'edit',
+                        'OPTIONS edit/<id:\d+>' => 'options',
+                        'OPTIONS logout' => 'options',
                     ],
                 ],
-                /*'<controller:\w+>/<id:\d+>' => '<controller>/view',
-                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
-                '<controller:\w+>/<action:\w+>' => '<controller>/<action>'*/
-
+                //'POST v1/<controller:\w+>/update/<id:\d+>' => 'v1/<controller>/update',
             ],
         ],
     ],

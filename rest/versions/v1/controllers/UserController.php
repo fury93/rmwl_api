@@ -50,12 +50,12 @@ class UserController extends ActiveController
             'except' => ['login', 'register', 'password-restore', 'check-authentication', 'options'],
         ];
 
-        $behaviors['verbs'] = [
+        /*$behaviors['verbs'] = [
             'class' => VerbFilter::className(),
             'actions' => [
-                'delete' => ['POST'],
+                'update' => ['POST'],
             ]
-        ];
+        ];*/
 
         return $behaviors;
     }
@@ -80,6 +80,7 @@ class UserController extends ActiveController
         $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
         unset($actions['update']);
         unset($actions['create']);
+        unset($actions['delete']);
 
         return $actions;
     }
@@ -95,7 +96,8 @@ class UserController extends ActiveController
         $params = \Yii::$app->request->getBodyParams();
 
         if ($model->load($params, '') && $model->login()) {
-            $userData = UserForm::prepareUserDate();
+            $userData = UserForm::getUserConfigurations();
+
             return ResponseHelper::success(['user' => $userData]);
         }
 
@@ -155,7 +157,7 @@ class UserController extends ActiveController
         $params = \Yii::$app->getRequest()->getBodyParams();
 
         if ($model->load($params, '') && $model->createUser()) {
-            return ResponseHelper::success(UserForm::prepareUserDate($model));
+            return ResponseHelper::success(UserForm::filterUserData($model));
         }
 
         return ResponseHelper::failed($model->getErrors());
@@ -166,16 +168,16 @@ class UserController extends ActiveController
      * @return array
      * @throws NotFoundHttpException
      */
-    public function actionUpdate($id)
+    public function actionEdit($id)
     {
         $model = $this->findModel($id);
         $params = \Yii::$app->getRequest()->getBodyParams();
 
         if ($model->load($params, '') && $model->updateUser()) {
-            return ResponseHelper::success($model->auth_key);
-        } else {
-            return ResponseHelper::failed($model->getErrors());
+            return ResponseHelper::success(UserForm::filterUserData($model));
         }
+
+        return ResponseHelper::failed($model->getErrors());
     }
 
     /**
@@ -229,7 +231,7 @@ class UserController extends ActiveController
      */
     public function prepareDataProvider()
     {
-        $users = UserForm::getUserData();
+        $users = UserForm::getUsersList();
 
         return ResponseHelper::success(['users' =>$users]);
     }
