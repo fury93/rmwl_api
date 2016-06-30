@@ -53,9 +53,8 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user'
+                        'v1/user',
                     ],
-                    //'except' => ['update'],
                     'pluralize' => false,
                     'extraPatterns' => [
                         'POST login' => 'login',
@@ -65,7 +64,17 @@ return [
                         'OPTIONS logout' => 'options',
                     ],
                 ],
-                //'POST v1/<controller:\w+>/update/<id:\d+>' => 'v1/<controller>/update',
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/product'
+                    ],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST edit/<id:\d+>' => 'edit',
+                        'OPTIONS edit/<id:\d+>' => 'options',
+                    ],
+                ],
             ],
         ],
     ],

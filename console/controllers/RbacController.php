@@ -38,8 +38,8 @@ class RbacController extends Controller
         $authManager->add($admin);
 
         //Inherit rules
-        $authManager->addChild($admin, $employee);
-        $authManager->addChild($admin, $patient);
+        //$authManager->addChild($admin, $employee);
+        //$authManager->addChild($admin, $patient);
 
         //Create permissions for User
         $indexUser = $authManager->createPermission('indexUser');
@@ -51,6 +51,13 @@ class RbacController extends Controller
         $editUser = $authManager->createPermission('editUser');
         $editUser->ruleName = $ruleUserUpdate->name;
 
+        //Create permissions for Product
+        $indexProduct = $authManager->createPermission('indexProduct');
+        $createProduct = $authManager->createPermission('createProduct');
+        $deleteProduct = $authManager->createPermission('deleteProduct');
+        $viewProduct = $authManager->createPermission('viewProduct');
+        $editProduct = $authManager->createPermission('editProduct');
+
         //Add permissions for User
         $authManager->add($indexUser);
         $authManager->add($loginUser);
@@ -60,23 +67,38 @@ class RbacController extends Controller
         $authManager->add($deleteUser);
         $authManager->add($viewUser);
 
+        //Add permissions for Product
+        $authManager->add($indexProduct);
+        $authManager->add($createProduct);
+        $authManager->add($deleteProduct);
+        $authManager->add($viewProduct);
+        $authManager->add($editProduct);
+
         //Guest permission
         $authManager->addChild($guest, $loginUser);
 
-
         //Patient permission
-        $authManager->addChild($patient, $logoutUser);
+        //$authManager->addChild($patient, $logoutUser);
 
         //Employee permission
-        $authManager->addChild($employee, $logoutUser);
+        //$authManager->addChild($employee, $logoutUser);
 
         //Admin permission
+
+        //User
         $authManager->addChild($admin, $logoutUser);
         $authManager->addChild($admin, $indexUser);
-        $authManager->addChild($guest, $createUser);
-        $authManager->addChild($employee, $editUser);
+        $authManager->addChild($admin, $createUser);
+        $authManager->addChild($admin, $editUser);
         $authManager->addChild($admin, $viewUser);
         $authManager->addChild($admin, $deleteUser);
+
+        //Products
+        $authManager->addChild($admin, $indexProduct);
+        $authManager->addChild($admin, $createProduct);
+        $authManager->addChild($admin, $editProduct);
+        $authManager->addChild($admin, $viewProduct);
+        $authManager->addChild($admin, $deleteProduct);
     }
 
 }

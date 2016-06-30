@@ -6,10 +6,7 @@ use rest\versions\v1\helper\ResponseHelper;
 use rest\versions\v1\models\LoginForm;
 use rest\versions\v1\models\User;
 use rest\versions\v1\models\UserForm;
-use yii\rest\Controller;
 use yii\web\ForbiddenHttpException;
-use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\web\NotFoundHttpException;
@@ -152,7 +149,6 @@ class UserController extends ActiveController
     public function actionCreate()
     {
         $model = new UserForm();
-//        $model->scenario  = UserForm::SCENARIO_REGISTER;
 
         $params = \Yii::$app->getRequest()->getBodyParams();
 
