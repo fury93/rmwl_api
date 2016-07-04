@@ -66,7 +66,7 @@ class Product extends ActiveRecord
      */
     public static function getProductsList()
     {
-        $products = Product::findAll([]);
+        $products = Product::find()->all();
 
         return $products;
     }
