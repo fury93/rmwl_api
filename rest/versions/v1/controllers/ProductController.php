@@ -73,9 +73,9 @@ class ProductController extends ActiveController
      */
     public function prepareDataProvider()
     {
-        $users = Product::getProductsList();
+        $products = Product::getProductsList();
 
-        return ResponseHelper::success(['users' =>$users]);
+        return ResponseHelper::success(['products' =>$products]);
     }
 
     /**
