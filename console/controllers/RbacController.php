@@ -52,6 +52,7 @@ class RbacController extends Controller
         $editUser->ruleName = $ruleUserUpdate->name;
         $checkAuth = $authManager->createPermission('check-authenticationUser');
         $resetPassword = $authManager->createPermission('reset-passwordUser');
+        $changePassword = $authManager->createPermission('change-passwordUser');
 
         //Create permissions for Product
         $indexProduct = $authManager->createPermission('indexProduct');
@@ -70,6 +71,7 @@ class RbacController extends Controller
         $authManager->add($viewUser);
         $authManager->add($checkAuth);
         $authManager->add($resetPassword);
+        $authManager->add($changePassword);
 
         //Add permissions for Product
         $authManager->add($indexProduct);
@@ -82,6 +84,7 @@ class RbacController extends Controller
         $authManager->addChild($guest, $loginUser);
         $authManager->addChild($guest, $checkAuth);
         $authManager->addChild($guest, $resetPassword);
+        $authManager->addChild($guest, $changePassword);
 
         //Patient permission
         //$authManager->addChild($patient, $logoutUser);

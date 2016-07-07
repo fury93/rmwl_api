@@ -44,7 +44,13 @@ class UserController extends ActiveController
 
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'except' => ['login', 'reset-password', 'check-authentication', 'options'],
+            'except' => [
+                'login',
+                'reset-password',
+                'change-password',
+                'check-authentication',
+                'options'
+            ],
         ];
 
         /*$behaviors['verbs'] = [
@@ -255,5 +261,27 @@ class UserController extends ActiveController
             ->send();
 
         return ResponseHelper::success('An email has been sent message.');
+    }
+
+    /**
+     * Change user password
+     *
+     * @return array
+     */
+    public function actionChangePassword()
+    {
+        $password = Yii::$app->request->post('password');
+        $resetToken = Yii::$app->request->post('reset-token');
+
+        if($resetToken && $password && $user = User::findByPasswordResetToken($resetToken)) {
+            $user->setPassword($password);
+            $user->clearPasswordResetToken();
+
+            if($user->save(false)) {
+                return ResponseHelper::success('Password was successfully changed.');
+            }
+        }
+
+        return ResponseHelper::failed('Password reset token not valid.');
     }
 }

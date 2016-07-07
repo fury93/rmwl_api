@@ -65,6 +65,7 @@ return [
                         'OPTIONS logout' => 'options',
                         'POST check-authentication' => 'check-authentication',
                         'POST reset-password' => 'reset-password',
+                        'POST change-password' => 'change-password',
                     ],
                 ],
                 [

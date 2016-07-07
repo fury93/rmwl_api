@@ -140,6 +140,14 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
+     * Clear field password_reset_token for user if user set new password
+     */
+    public function clearPasswordResetToken()
+    {
+        $this->password_reset_token = null;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getId()
