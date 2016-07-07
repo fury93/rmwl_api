@@ -16,6 +16,7 @@ return [
             'class' => 'rest\versions\v1\RestModule'
         ],
     ],
+    'timeZone' => 'America/Los_Angeles',
     'components' => [
         'user' => [
             'identityClass' => 'rest\versions\v1\models\User',
@@ -62,6 +63,8 @@ return [
                         'POST edit/<id:\d+>' => 'edit',
                         'OPTIONS edit/<id:\d+>' => 'options',
                         'OPTIONS logout' => 'options',
+                        'POST check-authentication' => 'check-authentication',
+                        'POST reset-password' => 'reset-password',
                     ],
                 ],
                 [

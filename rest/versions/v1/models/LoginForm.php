@@ -11,7 +11,7 @@ class LoginForm extends User
 {
     public $username;
     public $password;
-    public $rememberMe = true;
+    public $rememberMe = false;
     private $_user = false;
 
     /**
@@ -53,9 +53,9 @@ class LoginForm extends User
     {
         if ($this->validate()) {
             $user = $this->getUser();
-            $user->updateAccessToken();
+            $user->updateAccessToken($this->rememberMe);
 
-            return Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+            return Yii::$app->user->login($user);
         } else {
             return false;
         }

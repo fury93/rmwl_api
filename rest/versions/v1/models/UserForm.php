@@ -10,7 +10,8 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id
  * @property string $username
- * @property string $auth_key
+ * @property string $access_token
+ * @property string $token_expire
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $email
@@ -45,10 +46,10 @@ class UserForm extends User
         return [
             ['email', 'isEmailUnique'],
             ['email', 'email'],
-            [['username', 'auth_key', 'password_hash', 'email', 'role'], 'required'],
+            [['username', 'access_token', 'password_hash', 'email', 'role'], 'required'],
             [['status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'role'], 'string', 'max' => 255],
-            [['auth_key'], 'string', 'max' => 32],
+            [['access_token'], 'string', 'max' => 32],
             [['username', 'password'], 'required', 'on' => self::SCENARIO_LOGIN],
 //            [['username', 'password','email'], 'required', 'on' => self::SCENARIO_REGISTER],
         ];
@@ -86,10 +87,10 @@ class UserForm extends User
      */
     public function createUser()
     {
-        $this->generateAuthKey();
+        $this->generateAccessToken();
         $this->setPassword($this->password);
 
-        if($this->validate() &&  $this->save()) {
+        if ($this->validate() && $this->save()) {
             return true;
         }
 
@@ -105,7 +106,7 @@ class UserForm extends User
     {
         $this->setPassword($this->password);
 
-        if($this->validate() &&  $this->save()) {
+        if ($this->validate() && $this->save()) {
             return true;
         }
 
@@ -117,16 +118,18 @@ class UserForm extends User
      *
      * @return array
      */
-    public static function getUserConfigurations()
+    public static function getUserConfigurations($userData = null)
     {
-        $userData = \Yii::$app->user->identity;
+        if (!$userData) {
+            $userData = \Yii::$app->user->identity;
+        }
 
         //todo temp data, add roles and others params
         return [
             'user' => $userData->username,
             'id' => $userData->id,
             'role' => $userData->role,
-            'token' => $userData->auth_key,
+            'token' => $userData->access_token,
             'email' => $userData->email
         ];
     }
@@ -143,7 +146,7 @@ class UserForm extends User
             'status' => self::ACTIVE_STATUS,
         ]);
 
-        foreach($users as $user) {
+        foreach ($users as $user) {
             array_push($usersData, self::filterUserData($user));
         }
 

@@ -44,7 +44,7 @@ class UserController extends ActiveController
 
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'except' => ['login', 'password-restore', 'check-authentication', 'options'],
+            'except' => ['login', 'reset-password', 'check-authentication', 'options'],
         ];
 
         /*$behaviors['verbs'] = [
@@ -93,9 +93,9 @@ class UserController extends ActiveController
         $params = \Yii::$app->request->getBodyParams();
 
         if ($model->load($params, '') && $model->login()) {
-            $userData = UserForm::getUserConfigurations();
+            $userConfigs = UserForm::getUserConfigurations();
 
-            return ResponseHelper::success(['user' => $userData]);
+            return ResponseHelper::success(['user' => $userConfigs]);
         }
 
         return ResponseHelper::failed('Password or login not correct');
@@ -107,38 +107,35 @@ class UserController extends ActiveController
     public function actionLogout()
     {
         $user = \Yii::$app->user->identity;
-        if($user) {
+        if ($user) {
             $user->removeAccessToken();
         }
 
-        return \Yii::$app->user->logout();
+        return true;
+        //return \Yii::$app->user->logout();
     }
 
     /**
+     * Check if user have valid token (token expire date check)
+     * If token valid, then return user configurations
+     *
      * @return array
      */
     public function actionCheckAuthentication()
     {
-        $response = [];
-        $accessToken = Yii::$app->request->getQueryParam('access-token');
+        $accessToken = Yii::$app->request->post('token');
 
-        try {
-            if (!$accessToken) {
-                throw new Exception('Invalid access token');
-            }
+        if ($accessToken && $userData = User::findIdentityByAccessToken($accessToken)) {
+            $userConfigs = UserForm::getUserConfigurations($userData);
+            $roles = [];
 
-            $user = User::findIdentityByAccessToken($accessToken);
-
-            if (!$user) {
-                throw new Exception('Authenticated is failed');
-            }
-
-            $response['isAuthenticated'] = true;
-        } catch (Exception $e) {
-            $response['error'] = $e->getMessage();
+            return ResponseHelper::success([
+                'user' => $userConfigs,
+                'roles' => $roles
+            ]);
         }
 
-        return $response;
+        return ResponseHelper::failed('Token is not valid');
     }
 
     /**
@@ -185,7 +182,7 @@ class UserController extends ActiveController
     {
         $model = $this->findModel($id);
 
-        if($model) {
+        if ($model) {
             return ResponseHelper::success($model);
         } else {
             return ResponseHelper::failed(null);
@@ -229,6 +226,34 @@ class UserController extends ActiveController
     {
         $users = UserForm::getUsersList();
 
-        return ResponseHelper::success(['users' =>$users]);
+        return ResponseHelper::success(['users' => $users]);
+    }
+
+    /**
+     * Action for reset password
+     *
+     * @return array
+     */
+    public function actionResetPassword()
+    {
+        $email = Yii::$app->request->post('email');
+
+        $user = User::findByEmail($email);
+        if (!$user) {
+            return ResponseHelper::failed('The user with this email does not exist.');
+        }
+
+        $user->generatePasswordResetToken();
+        $user->save(false);
+
+        \Yii::$app->mailer->compose()
+            ->setFrom(\Yii::$app->params['adminEmail'])
+            ->setTo($email)
+            ->setSubject('Password recovery')
+            ->setTextBody('Plain text content')
+            ->setHtmlBody($this->render('@rest/versions/v1/views/resetPassword', compact('user')))
+            ->send();
+
+        return ResponseHelper::success('An email has been sent message.');
     }
 }

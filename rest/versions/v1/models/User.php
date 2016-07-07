@@ -16,7 +16,8 @@ use yii\filters\RateLimitInterface;
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $email
- * @property string $auth_key
+ * @property string $access_token
+ * @property string $token_expire
  * @property integer $status
  * @property integer $role
  * @property integer $created_at
@@ -78,7 +79,18 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne(['auth_key' => $token]);
+        $identity = static::findOne(['access_token' => $token]);
+
+        if (!$identity || !$identity->token_expire || $identity->token_expire <= time()) {
+            $identity = null;
+        }
+
+        if ($identity && self::isChangeTokenExpire($identity->token_expire)) {
+            $identity->generateTokenExpireDate();
+            $identity->save();
+        }
+
+        return $identity;
     }
 
     /**
@@ -123,6 +135,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         $parts = explode('_', $token);
         $timestamp = (int)end($parts);
+
         return $timestamp + $expire >= time();
     }
 
@@ -139,7 +152,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      */
     public function getAuthKey()
     {
-        return $this->auth_key;
+        return $this->access_token;
     }
 
     /**
@@ -169,18 +182,29 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     public function setPassword($password)
     {
         //todo temp
-        if(!$password) {
+        if (!$password) {
             $password = 'test';
         }
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
     /**
-     * Generates "remember me" authentication key
+     * Generates access token
      */
-    public function generateAuthKey()
+    public function generateAccessToken()
     {
-        $this->auth_key = Yii::$app->security->generateRandomString();
+        $this->access_token = Yii::$app->security->generateRandomString();
+    }
+
+    /**
+     * @param bool $rememberMe
+     */
+    public function generateTokenExpireDate($rememberMe = false)
+    {
+        $tokenExpire = $rememberMe ?
+            Yii::$app->params['user.expireSecondsRemember'] : Yii::$app->params['user.expireSecondsNotRemember'];
+
+        $this->token_expire = time() + $tokenExpire;
     }
 
     /**
@@ -236,18 +260,21 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      */
     public function removeAccessToken()
     {
-        $this->auth_key = null;
+        $this->access_token = null;
+        $this->token_expire = null;
         $this->save(false);
 
         return true;
     }
 
     /**
+     * @param bool $rememberMe
      * @return bool
      */
-    public function updateAccessToken()
+    public function updateAccessToken($rememberMe = false)
     {
-        $this->generateAuthKey();
+        $this->generateAccessToken();
+        $this->generateTokenExpireDate($rememberMe);
         $this->save(false);
 
         return true;
@@ -259,7 +286,20 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * @param string $email
      * @return static|null
      */
-    public static function findByEmail($email) {
+    public static function findByEmail($email)
+    {
         return static::findOne(['email' => $email]);
+    }
+
+    public static function isChangeTokenExpire($tokenExpire)
+    {
+        //Use sliding expiration approach and update token expire by any request
+        //But if user set 'remember me', then token not update, while current time > token
+        // expire time + expire config param (1 hour default)
+        if ($tokenExpire - Yii::$app->params['user.expireSecondsNotRemember'] <= time()) {
+            return true;
+        }
+
+        return false;
     }
 }

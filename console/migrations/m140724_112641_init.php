@@ -18,7 +18,8 @@ class m140724_112641_init extends Migration
             [
                 'id' => Schema::TYPE_PK,
                 'username' => Schema::TYPE_STRING . ' NOT NULL ',
-                'auth_key' => Schema::TYPE_STRING . '(32) NOT NULL',
+                'access_token' => Schema::TYPE_STRING . '(32) NOT NULL',
+                'token_expire' => Schema::TYPE_INTEGER . ' DEFAULT NULL',
                 'password_hash' => Schema::TYPE_STRING . ' NOT NULL',
                 'password_reset_token' => Schema::TYPE_STRING,
                 'email' => Schema::TYPE_STRING . ' NOT NULL',
@@ -33,7 +34,7 @@ class m140724_112641_init extends Migration
         $user = new User();
         $user->username = 'demo';
         $user->email = 'demo@mail.net';
-        $user->generateAuthKey();
+        $user->generateAccessToken();
         $user->setPassword('demo');
         $user->role = User::ROLE_ADMIN;
         return $user->insert();
