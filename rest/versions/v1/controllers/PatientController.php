@@ -2,6 +2,7 @@
 
 namespace rest\versions\v1\controllers;
 
+use rest\versions\v1\models\Patient;
 use Yii;
 use rest\versions\v1\helper\ActionsHelper;
 use rest\versions\v1\helper\ResponseHelper;
@@ -14,11 +15,11 @@ use yii\web\ForbiddenHttpException;
 use yii\filters\auth\HttpBearerAuth;
 
 /**
- * ProductController implements the CRUD actions for Product model.
+ * PatientController implements the CRUD actions for Product model.
  */
-class ProductController extends ActiveController
+class PatientController extends ActiveController
 {
-    public $modelClass = 'rest\versions\v1\models\Product';
+    public $modelClass = 'rest\versions\v1\models\Patient';
 
     public function behaviors()
     {
@@ -61,9 +62,9 @@ class ProductController extends ActiveController
      */
     public function prepareDataProvider()
     {
-        $products = Product::getProductsList();
+        $patients = Patient::getPatientsList();
 
-        return ResponseHelper::success(['products' =>$products]);
+        return ResponseHelper::success(['patients' =>$patients]);
     }
 
     /**
@@ -71,11 +72,11 @@ class ProductController extends ActiveController
      */
     public function actionCreate()
     {
-        $model = new Product();
+        $model = new Patient();
 
         $params = \Yii::$app->getRequest()->getBodyParams();
 
-        if ($model->load($params, '') && $model->insertProduct()) {
+        if ($model->load($params, '') && $model->insertPatient()) {
             return ResponseHelper::success($model);
         }
 
@@ -92,7 +93,7 @@ class ProductController extends ActiveController
         $model = $this->findModel($id);
         $params = \Yii::$app->getRequest()->getBodyParams();
 
-        if ($model->load($params, '') && $model->insertProduct()) {
+        if ($model->load($params, '') && $model->insertPatient()) {
             return ResponseHelper::success($model);
         }
 

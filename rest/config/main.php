@@ -79,6 +79,17 @@ return [
                         'OPTIONS edit/<id:\d+>' => 'options',
                     ],
                 ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/patient'
+                    ],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST edit/<id:\d+>' => 'edit',
+                        'OPTIONS edit/<id:\d+>' => 'options',
+                    ],
+                ],
             ],
         ],
     ],

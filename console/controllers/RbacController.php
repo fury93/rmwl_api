@@ -61,6 +61,13 @@ class RbacController extends Controller
         $viewProduct = $authManager->createPermission('viewProduct');
         $editProduct = $authManager->createPermission('editProduct');
 
+        //Create permissions for Patient
+        $indexPatient = $authManager->createPermission('indexPatient');
+        $createPatient = $authManager->createPermission('createPatient');
+        $deletePatient = $authManager->createPermission('deletePatient');
+        $viewPatient = $authManager->createPermission('viewPatient');
+        $editPatient = $authManager->createPermission('editPatient');
+
         //Add permissions for User
         $authManager->add($indexUser);
         $authManager->add($loginUser);
@@ -79,6 +86,13 @@ class RbacController extends Controller
         $authManager->add($deleteProduct);
         $authManager->add($viewProduct);
         $authManager->add($editProduct);
+
+        //Add permissions for Patient
+        $authManager->add($indexPatient);
+        $authManager->add($createPatient);
+        $authManager->add($deletePatient);
+        $authManager->add($viewPatient);
+        $authManager->add($editPatient);
 
         //Guest permission
         $authManager->addChild($guest, $loginUser);
@@ -108,6 +122,13 @@ class RbacController extends Controller
         $authManager->addChild($admin, $editProduct);
         $authManager->addChild($admin, $viewProduct);
         $authManager->addChild($admin, $deleteProduct);
+
+        //Patients
+        $authManager->addChild($admin, $indexPatient);
+        $authManager->addChild($admin, $createPatient);
+        $authManager->addChild($admin, $editPatient);
+        $authManager->addChild($admin, $viewPatient);
+        $authManager->addChild($admin, $deletePatient);
     }
 
 }
