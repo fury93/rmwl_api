@@ -97,7 +97,7 @@ use yii\helpers\Url;
                                         <tr>
                                             <td align="center">
                                                 <div>
-                                                    <a href="<?= \Yii::$app->params['domainUrl'] . '/update-password?token=' . $user->password_reset_token ?>"
+                                                    <a href="<?= \Yii::$app->params['domainUrl'] . '/change-password?token=' . $user->password_reset_token ?>"
                                                        style="display: inline-block; width: 200px;background-color: #3869D4;border-radius: 3px;color: #ffffff;font-size: 15px;line-height: 45px;text-align: center;text-decoration: none;-webkit-text-size-adjust: none;mso-hide: all;">Reset
                                                         your password</a>
                                                 </div>
