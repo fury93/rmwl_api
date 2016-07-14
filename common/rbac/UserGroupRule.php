@@ -2,7 +2,7 @@
 
 namespace common\rbac;
 
-use rest\versions\v1\models\User;
+use rest\versions\v1\models\Role;
 use Yii;
 use yii\rbac\Rule;
 
@@ -15,12 +15,16 @@ class UserGroupRule extends Rule
         if (!\Yii::$app->user->isGuest) {
             $group = \Yii::$app->user->identity->role;
 
-            if ($item->name === User::ROLE_ADMIN) {
-                return $group == User::ROLE_ADMIN;
-            } elseif ($item->name === User::ROLE_EMPLOYEE) {
-                return $group == User::ROLE_ADMIN || $group == User::ROLE_EMPLOYEE;
-            } elseif ($item->name === User::ROLE_PATIENT) {
-                return $group == User::ROLE_ADMIN || $group == User::ROLE_PATIENT;
+            if ($item->name === Role::ROLE_ADMIN) {
+                return $group == Role::ROLE_ADMIN;
+            } elseif ($item->name === Role::ROLE_MANAGEMENT) {
+                return $group == Role::ROLE_ADMIN || $group == Role::ROLE_MANAGEMENT;
+            } elseif ($item->name === Role::ROLE_INVENTORY_MANAGEMENT) {
+                return $group == Role::ROLE_ADMIN || $group == Role::ROLE_INVENTORY_MANAGEMENT;
+            } elseif ($item->name === Role::ROLE_ENTRY) {
+                return $group == Role::ROLE_ADMIN || $group == Role::ROLE_MANAGEMENT || $group == Role::ROLE_ENTRY;
+            } elseif ($item->name === Role::ROLE_PATIENT) {
+                return $group == Role::ROLE_PATIENT;
             }
         }
 

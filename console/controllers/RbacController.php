@@ -3,7 +3,7 @@
 namespace console\controllers;
 
 use common\rbac\UserUpdateRule;
-use rest\versions\v1\models\User;
+use rest\versions\v1\models\Role;
 use Yii;
 use yii\console\Controller;
 use \common\rbac\UserGroupRule;
@@ -23,19 +23,26 @@ class RbacController extends Controller
         $authManager->add($ruleUserUpdate);
 
         // Create roles
-        $guest = $authManager->createRole(User::ROLE_GUEST);
-        $employee = $authManager->createRole(User::ROLE_EMPLOYEE);
-        $patient = $authManager->createRole(User::ROLE_PATIENT);
-        $admin = $authManager->createRole(User::ROLE_ADMIN);
+        $guest = $authManager->createRole(Role::ROLE_GUEST);
+        $admin = $authManager->createRole(Role::ROLE_ADMIN);
+        $patient = $authManager->createRole(Role::ROLE_PATIENT);
+        $entry = $authManager->createRole(Role::ROLE_ENTRY);
+        $management = $authManager->createRole(Role::ROLE_MANAGEMENT);
+        $inventoryManagement = $authManager->createRole(Role::ROLE_INVENTORY_MANAGEMENT);
 
-        $employee->ruleName = $userGroupRule->name;
-        $patient->ruleName = $userGroupRule->name;
+        //$guest->ruleName = $userGroupRule->name;
         $admin->ruleName = $userGroupRule->name;
+        $patient->ruleName = $userGroupRule->name;
+        $entry->ruleName = $userGroupRule->name;
+        $management->ruleName = $userGroupRule->name;
+        $inventoryManagement->ruleName = $userGroupRule->name;
 
         $authManager->add($guest);
-        $authManager->add($employee);
-        $authManager->add($patient);
         $authManager->add($admin);
+        $authManager->add($patient);
+        $authManager->add($entry);
+        $authManager->add($management);
+        $authManager->add($inventoryManagement);
 
         //Inherit rules
         //$authManager->addChild($admin, $employee);
@@ -100,35 +107,6 @@ class RbacController extends Controller
         $authManager->addChild($guest, $resetPassword);
         $authManager->addChild($guest, $changePassword);
 
-        //Patient permission
-        //$authManager->addChild($patient, $logoutUser);
-
-        //Employee permission
-        //$authManager->addChild($employee, $logoutUser);
-
-        //Admin permission
-
-        //User
-        $authManager->addChild($admin, $logoutUser);
-        $authManager->addChild($admin, $indexUser);
-        $authManager->addChild($admin, $createUser);
-        $authManager->addChild($admin, $editUser);
-        $authManager->addChild($admin, $viewUser);
-        $authManager->addChild($admin, $deleteUser);
-
-        //Products
-        $authManager->addChild($admin, $indexProduct);
-        $authManager->addChild($admin, $createProduct);
-        $authManager->addChild($admin, $editProduct);
-        $authManager->addChild($admin, $viewProduct);
-        $authManager->addChild($admin, $deleteProduct);
-
-        //Patients
-        $authManager->addChild($admin, $indexPatient);
-        $authManager->addChild($admin, $createPatient);
-        $authManager->addChild($admin, $editPatient);
-        $authManager->addChild($admin, $viewPatient);
-        $authManager->addChild($admin, $deletePatient);
     }
 
 }

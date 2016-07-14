@@ -2,7 +2,7 @@
 
 namespace common\rbac;
 
-use rest\versions\v1\models\UserForm;
+use rest\versions\v1\models\Role;
 use yii\rbac\Rule;
 
 /**
@@ -26,6 +26,7 @@ class UserUpdateRule extends Rule
         $userEditId = \Yii::$app->getRequest()->get('id');
         $currentRole = \Yii::$app->user->identity->role;
 
-        return ($userEditId == $user || $currentRole == UserForm::ROLE_ADMIN);
+        //todo temp
+        return ($userEditId == $user || $currentRole == Role::ROLE_ADMIN);
     }
 }

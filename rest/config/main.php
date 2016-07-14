@@ -24,7 +24,7 @@ return [
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
-            'defaultRoles' => ['guest', 'employee', 'admin', 'patient'],
+            'defaultRoles' => ['Guest', 'Admin', 'Patient', 'Entry', 'Management'],
         ],
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,
@@ -90,6 +90,8 @@ return [
                         'OPTIONS edit/<id:\d+>' => 'options',
                     ],
                 ],
+                'GET v1/permission/roles-permission' => 'v1/permission/roles-permission',
+                'POST v1/permission/update-permission' => 'v1/permission/update-permission',
             ],
         ],
     ],

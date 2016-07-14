@@ -28,14 +28,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
-
-    /**
-     * Id roles in DB
-     */
-    const ROLE_ADMIN = 'admin';
-    const ROLE_EMPLOYEE = 'employee';
-    const ROLE_PATIENT = 'patient';
-    const ROLE_GUEST = 'guest';
+    const STATUS_REGISTER = 2;
 
     /**
      * @inheritdoc

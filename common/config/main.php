@@ -5,6 +5,9 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             /*'transport' => [

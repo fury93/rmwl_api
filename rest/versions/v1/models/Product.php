@@ -10,7 +10,13 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "products".
  *
  * @property integer $id
+ * @property integer $vendor_id
  * @property string $name
+ * @property integer $code
+ * @property string $description
+ * @property string $status
+ * @property double $cost
+ * @property integer $effective_date
  * @property integer $expiration_date
  * @property integer $created_at
  * @property integer $updated_at
@@ -31,9 +37,11 @@ class Product extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'expiration_date'], 'required'],
-            [['expiration_date', 'created_at', 'updated_at'], 'integer'],
-            [['name'], 'string', 'max' => 255],
+            [['vendor_id', 'name', 'code', 'status', 'cost', 'effective_date', 'expiration_date', 'created_at',
+                'updated_at'], 'required'],
+            [['vendor_id', 'code', 'effective_date', 'expiration_date', 'created_at', 'updated_at'], 'integer'],
+            [['cost'], 'number'],
+            [['name', 'description', 'status'], 'string', 'max' => 255],
         ];
     }
 
