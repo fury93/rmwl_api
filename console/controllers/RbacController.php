@@ -10,6 +10,10 @@ use \common\rbac\UserGroupRule;
 
 class RbacController extends Controller
 {
+    /**
+     * All permissions name will be unique
+     * Names are duplicated in Permissions model
+     */
     public function actionInit()
     {
         $authManager = \Yii::$app->authManager;
@@ -48,32 +52,41 @@ class RbacController extends Controller
         //$authManager->addChild($admin, $employee);
         //$authManager->addChild($admin, $patient);
 
-        //Create permissions for User
+        //User
+        //Auth user
         $indexUser = $authManager->createPermission('indexUser');
-        $loginUser = $authManager->createPermission('loginUser');
         $logoutUser = $authManager->createPermission('logoutUser');
         $createUser = $authManager->createPermission('createUser');
         $deleteUser = $authManager->createPermission('deleteUser');
         $viewUser = $authManager->createPermission('viewUser');
         $editUser = $authManager->createPermission('editUser');
         $editUser->ruleName = $ruleUserUpdate->name;
+
+        //Guest
+        $loginUser = $authManager->createPermission('loginUser');
         $checkAuth = $authManager->createPermission('check-authenticationUser');
         $resetPassword = $authManager->createPermission('reset-passwordUser');
         $changePassword = $authManager->createPermission('change-passwordUser');
 
-        //Create permissions for Product
+        //Product
         $indexProduct = $authManager->createPermission('indexProduct');
         $createProduct = $authManager->createPermission('createProduct');
         $deleteProduct = $authManager->createPermission('deleteProduct');
         $viewProduct = $authManager->createPermission('viewProduct');
         $editProduct = $authManager->createPermission('editProduct');
 
-        //Create permissions for Patient
+        //Patient
         $indexPatient = $authManager->createPermission('indexPatient');
         $createPatient = $authManager->createPermission('createPatient');
         $deletePatient = $authManager->createPermission('deletePatient');
         $viewPatient = $authManager->createPermission('viewPatient');
         $editPatient = $authManager->createPermission('editPatient');
+
+        //Permission
+        $rolesPermission = $authManager->createPermission('roles-permissionPermission');
+        $updateRolesPermission = $authManager->createPermission('update-roles-permissionPermission');
+        $userPermission = $authManager->createPermission('user-permissionPermission');
+        $updateUserPermission = $authManager->createPermission('update-user-permissionPermission');
 
         //Add permissions for User
         $authManager->add($indexUser);
@@ -101,11 +114,26 @@ class RbacController extends Controller
         $authManager->add($viewPatient);
         $authManager->add($editPatient);
 
+        //Add permission for Permission
+        $authManager->add($rolesPermission);
+        $authManager->add($updateRolesPermission);
+        $authManager->add($userPermission);
+        $authManager->add($updateUserPermission);
+
         //Guest permission
         $authManager->addChild($guest, $loginUser);
         $authManager->addChild($guest, $checkAuth);
         $authManager->addChild($guest, $resetPassword);
         $authManager->addChild($guest, $changePassword);
+
+        //Base permission. This permission you can't change in permission module
+        $authManager->addChild($admin, $logoutUser);
+        $authManager->addChild($patient, $logoutUser);
+        $authManager->addChild($entry, $logoutUser);
+        $authManager->addChild($management, $logoutUser);
+        $authManager->addChild($inventoryManagement, $logoutUser);
+
+        //Need add permission for patient role
 
     }
 

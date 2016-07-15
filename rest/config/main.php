@@ -91,7 +91,12 @@ return [
                     ],
                 ],
                 'GET v1/permission/roles-permission' => 'v1/permission/roles-permission',
-                'POST v1/permission/update-permission' => 'v1/permission/update-permission',
+                'GET v1/permission/user-permission/<id:\d+>' => 'v1/permission/user-permission',
+                'POST v1/permission/roles-permission' => 'v1/permission/update-roles-permission',
+                'POST v1/permission/user-permission/<id:\d+>' => 'v1/permission/update-user-permission',
+
+                'OPTIONS v1/permission/roles-permission' => 'v1/permission/options',
+                'OPTIONS v1/permission/user-permission/<id:\d+>' => 'v1/permission/options',
             ],
         ],
     ],

@@ -49,6 +49,14 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getForbiddenActions()
+    {
+        return $this->hasMany(AuthItemUser::className(), ['user_id' => 'id']);
+    }
+
+    /**
      * @inheritdoc
      */
     public function rules()

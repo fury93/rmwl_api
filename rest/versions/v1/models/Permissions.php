@@ -10,6 +10,7 @@ class Permissions
     const MODULE_POS = 'POS';
     const MODULE_PIM = 'PIM';
     const MODULE_EMR = 'EMR';
+    const MODULE_ADMIN_TOOLS = 'ADMIN TOOLS';
     const MODULE_REPORTING = 'REPORTING';
 
     const SELECTED_FIELD = 'active';
@@ -39,24 +40,58 @@ class Permissions
     {
         $permissions = [
             self::MODULE_PIM => [
-                'indexProduct' => 'indexProduct',
-                'createProduct' => 'createProduct',
-                'editProduct' => 'editProduct',
-                'viewProduct' => 'viewProduct',
-                'deleteProduct' => 'deleteProduct',
+                'indexProduct' => 'Product Page',
+                'createProduct' => 'Product Create',
+                'editProduct' => 'Product Edit',
+                'viewProduct' => 'Product View',
+                'deleteProduct' => 'Product Delete',
             ],
             self::MODULE_EMR => [
-                'indexPatient' => 'indexPatient',
-                'createPatient' => 'createPatient',
-                'editPatient' => 'editPatient',
-                'viewPatient' => 'viewPatient',
-                'deletePatient' => 'deletePatient',
+                'indexPatient' => 'Patient Page',
+                'createPatient' => 'Patient Create',
+                'editPatient' => 'Patient Edit',
+                'viewPatient' => 'Patient View',
+                'deletePatient' => 'Patient Delete',
+            ],
+            self::MODULE_ADMIN_TOOLS => [
+                'indexUser' => 'Users Page',
+                'createUser' => 'User Create',
+                'editUser' => 'User Edit',
+                'viewUser' => 'User View',
+                'deleteUser' => 'User Delete',
+
+                'roles-permissionPermission' => 'Roles Permission Page',
+                'update-roles-permissionPermission' => 'Update Roles Permission',
+                'user-permissionPermission' => 'User Permission Page',
+                'update-user-permissionPermission' => 'Update User Permission',
             ],
             self::MODULE_POS => [],
             self::MODULE_REPORTING => []
         ];
 
         return $permissions;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAdditionalPermission()
+    {
+        return [
+            'loginUser',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getGuestPermission()
+    {
+        return [
+            'check-authenticationUser',
+            'reset-passwordUser',
+            'change-passwordUser'
+        ];
     }
 
     /**
@@ -76,31 +111,19 @@ class Permissions
         return [];
     }
 
-    public static function getPermissionsForRoles($roles, $modulesPermissions)
+    /**
+     * Return active permission for roles (auth_item_child table)
+     *
+     * @param $roles
+     * @return array
+     */
+    public static function getPermissionsForRoles($roles)
     {
         $rolesPermission = [];
 
         foreach ($roles as $roleName => $role) {
-            //$modulesResult = [];
             $roleChecked = array_keys(Yii::$app->authManager->getPermissionsByRole($role));
-
-            /*foreach($modulesPermissions as $moduleName => $modulePermissions) {
-                $moduleResult = [];
-
-                foreach($modulePermissions as $permission) {
-                    $data = [
-                        'key' => $permission,
-                        'value' => $permission, //add description
-                        //'status' => in_array($permission, $roleChecked) ? true : false
-                    ];
-
-                    array_push($moduleResult, $data);
-                }
-
-                $modulesResult[self::MODULES_FIELD][$moduleName] = $moduleResult;
-                $modulesResult[self::SELECTED_FIELD] = $roleChecked;
-            }*/
-
+            //todo perhaps need delete in array base action, like login
             $rolesPermission[$roleName] = $roleChecked;
         }
 
@@ -108,10 +131,16 @@ class Permissions
     }
 
     /**
+     * Return array with permissions value/description by module
+     * If 2 parameter $rolePermission not empty, then delete from modules permissions which not in this array
+     * It used when need get permission for user, not roles
+     *
      * @param $modulesPermissions
+     * @param $rolePermissions
+     *
      * @return array
      */
-    public static function getPermissionsTemplate($modulesPermissions)
+    public static function getPermissionsTemplate($modulesPermissions, $rolePermissions = [])
     {
         $template = [];
 
@@ -119,12 +148,14 @@ class Permissions
             $moduleResult = [];
 
             foreach ($modulePermissions as $keyPermission => $descriptionPermission) {
-                $data = [
-                    'value' => $keyPermission,
-                    'name' => $descriptionPermission, //add description
-                ];
+                if (!$rolePermissions || in_array($keyPermission, $rolePermissions)) {
+                    $data = [
+                        'value' => $keyPermission,
+                        'name' => $descriptionPermission,
+                    ];
 
-                array_push($moduleResult, $data);
+                    array_push($moduleResult, $data);
+                }
             }
 
             $template[$moduleName] = $moduleResult;
@@ -133,18 +164,9 @@ class Permissions
         return $template;
     }
 
-    public static function ifAllowedPermission()
-    {
-        //todo
-        /*$premissions = Yii::$app->authManager->getPermissions();
-        $roles = Yii::$app->authManager->getRoles();
-        $userRole = Yii::$app->authManager->getRolesByUser(1);
-        //$permissions = ArrayHelper::map(Yii::$app->authManager->getPermissions(), 'name', 'description');
-        $role_permit = array_keys(Yii::$app->authManager->getPermissionsByRole('Guest'));
-        $guestChild = Yii::$app->authManager->getChildren('Guest');*/
-    }
-
     /**
+     * Update permissions for roles
+     *
      * @param $newPermission
      * @return bool
      */
@@ -159,17 +181,102 @@ class Permissions
                 $permission = Yii::$app->authManager->getPermission($permit);
 
                 if (in_array($permit, $rolePermission)) {
-
                     if (!Yii::$app->authManager->hasChild($role, $permission)) {
                         Yii::$app->authManager->addChild($role, $permission);
                     }
                 } elseif (Yii::$app->authManager->hasChild($role, $permission)) {
-                    Yii::$app->authManager->removeChild($role, $permission);
+                    if (!in_array($permit, self::getAdditionalPermission())) {
+                        Yii::$app->authManager->removeChild($role, $permission);
+                    }
                 }
             }
         }
 
         return true;
+    }
+
+    /**
+     *  Update permissions for user
+     *
+     * @param $newPermission
+     * @param $userId
+     * @return bool
+     * @throws \Exception
+     */
+    public static function updateForbiddenPermissions($newPermission, $userId)
+    {
+        $user = User::findIdentity($userId);
+        $rolePermissions = array_keys(Yii::$app->authManager->getPermissionsByRole($user->role));
+        $needForbidden = array_diff($rolePermissions, $newPermission);
+        $connection = \Yii::$app->db;
+
+        $transaction = $connection->beginTransaction();
+        try {
+            AuthItemUser::deleteByUser($userId);
+            AuthItemUser::addManyItems($userId, $needForbidden);
+
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks, if action forbidden for current user
+     * Prohibited action in table auth_item_user
+     *
+     * @param $action
+     * @return bool
+     */
+    public static function isForbiddenActionForUser($action)
+    {
+        $forbidden = self::getForbiddenActionForUser();
+
+        if (in_array($action, $forbidden)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Return list wit forbidden actions
+     *
+     * @param null $user
+     * @return array
+     */
+    public static function getForbiddenActionForUser($user = null)
+    {
+        $forbidden = [];
+
+        if (!$user) {
+            $user = \Yii::$app->user->identity;
+        }
+
+        if ($user) {
+            $result = $user->getForbiddenActions()->asArray()->all();
+            $forbidden = ArrayHelper::getColumn($result, 'auth_item');
+        }
+
+        return $forbidden;
+    }
+
+    /**
+     * Return List permissions for current user
+     *
+     * @param $rolePermission
+     * @param $user
+     * @return array
+     */
+    public static function getUserPermissions($rolePermission, $user)
+    {
+        $forbiddenPermission = Permissions::getForbiddenActionForUser($user);
+        $userHaveAccess = array_diff($rolePermission, $forbiddenPermission);
+
+        return array_values($userHaveAccess);
     }
 
 }
