@@ -23,6 +23,7 @@ class ProductController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        unset($behaviors['rateLimiter']);
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
             'except' => ['options'],
@@ -50,6 +51,9 @@ class ProductController extends ActiveController
 
         $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
         unset($actions['update']);
+        unset($actions['create']);
+        unset($actions['delete']);
+        unset($actions['view']);
 
         return $actions;
     }

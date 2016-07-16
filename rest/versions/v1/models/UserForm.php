@@ -46,7 +46,7 @@ class UserForm extends User
         return [
             ['email', 'isEmailUnique'],
             ['email', 'email'],
-            [['username', 'access_token', 'password_hash', 'email', 'role'], 'required'],
+            [['username', 'password_hash', 'email', 'role'], 'required'],
             [['status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'role'], 'string', 'max' => 255],
             [['access_token'], 'string', 'max' => 32],

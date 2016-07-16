@@ -4,7 +4,8 @@ namespace rest\versions\v1\models;
 
 use Yii;
 
-class Role{
+class Role
+{
     const ROLE_ADMIN = 'Admin'; //super user
     const ROLE_PATIENT = 'Patient'; // New patient and returning patient
     const ROLE_ENTRY = 'Entry';
@@ -12,6 +13,9 @@ class Role{
     const ROLE_INVENTORY_MANAGEMENT = 'Inventory Management';
     const ROLE_GUEST = 'Guest';
 
+    /**
+     * @return array
+     */
     public static function getRolesList()
     {
         return [
@@ -20,6 +24,20 @@ class Role{
             self::ROLE_ENTRY => self::ROLE_ENTRY,
             self::ROLE_MANAGEMENT => self::ROLE_MANAGEMENT,
             self::ROLE_INVENTORY_MANAGEMENT => self::ROLE_INVENTORY_MANAGEMENT
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getRolesValues()
+    {
+        return [
+            self::ROLE_ADMIN,
+            self::ROLE_PATIENT,
+            self::ROLE_ENTRY,
+            self::ROLE_MANAGEMENT,
+            self::ROLE_INVENTORY_MANAGEMENT
         ];
     }
 }

@@ -37,8 +37,7 @@ class Product extends ActiveRecord
     public function rules()
     {
         return [
-            [['vendor_id', 'name', 'code', 'status', 'cost', 'effective_date', 'expiration_date', 'created_at',
-                'updated_at'], 'required'],
+            [['vendor_id', 'name', 'code', 'status', 'cost', 'effective_date', 'expiration_date'], 'required'],
             [['vendor_id', 'code', 'effective_date', 'expiration_date', 'created_at', 'updated_at'], 'integer'],
             [['cost'], 'number'],
             [['name', 'description', 'status'], 'string', 'max' => 255],

@@ -4,6 +4,7 @@ namespace rest\versions\v1\controllers;
 use rest\versions\v1\helper\ActionsHelper;
 use rest\versions\v1\helper\ResponseHelper;
 use rest\versions\v1\models\LoginForm;
+use rest\versions\v1\models\Role;
 use rest\versions\v1\models\User;
 use rest\versions\v1\models\UserForm;
 use yii\web\ForbiddenHttpException;
@@ -133,7 +134,7 @@ class UserController extends ActiveController
 
         if ($accessToken && $userData = User::findIdentityByAccessToken($accessToken)) {
             $userConfigs = UserForm::getUserConfigurations($userData);
-            $roles = [];
+            $roles = Role::getRolesValues();
 
             return ResponseHelper::success([
                 'user' => $userConfigs,
