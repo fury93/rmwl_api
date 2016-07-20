@@ -64,7 +64,7 @@ class PatientController extends ActiveController
     {
         $patients = Patient::getPatientsList();
 
-        return ResponseHelper::success(['patients' =>$patients]);
+        return ResponseHelper::success($patients);
     }
 
     /**

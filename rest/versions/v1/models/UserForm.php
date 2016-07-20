@@ -25,9 +25,6 @@ class UserForm extends User
 //    const SCENARIO_REGISTER = 'register';
     const SCENARIO_LOGIN = 'login';
 
-    //Status field in db
-    const ACTIVE_STATUS = 1;
-
     public $password;
 
     /**
@@ -142,9 +139,13 @@ class UserForm extends User
     public static function getUsersList()
     {
         $usersData = [];
-        $users = UserForm::findAll([
-            'status' => self::ACTIVE_STATUS,
-        ]);
+/*        $users = UserForm::findAll([
+            'status' => self::STATUS_ACTIVE
+        ]);*/
+        $users = UserForm::find()
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->orWhere(['status' => self::STATUS_REGISTER])
+            ->all();
 
         foreach ($users as $user) {
             array_push($usersData, self::filterUserData($user));

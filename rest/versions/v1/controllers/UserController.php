@@ -233,7 +233,7 @@ class UserController extends ActiveController
     {
         $users = UserForm::getUsersList();
 
-        return ResponseHelper::success(['users' => $users]);
+        return ResponseHelper::success($users);
     }
 
     /**

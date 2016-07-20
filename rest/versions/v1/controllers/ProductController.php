@@ -67,7 +67,7 @@ class ProductController extends ActiveController
     {
         $products = Product::getProductsList();
 
-        return ResponseHelper::success(['products' =>$products]);
+        return ResponseHelper::success($products);
     }
 
     /**
