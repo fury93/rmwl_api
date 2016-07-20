@@ -105,7 +105,7 @@ class UserController extends ActiveController
             return ResponseHelper::success(['user' => $userConfigs]);
         }
 
-        return ResponseHelper::failed('Password or login not correct');
+        return ResponseHelper::failed(['message' => 'Password or login not correct']);
     }
 
     /**
@@ -118,8 +118,7 @@ class UserController extends ActiveController
             $user->removeAccessToken();
         }
 
-        return true;
-        //return \Yii::$app->user->logout();
+        return ResponseHelper::success([]);
     }
 
     /**
@@ -142,7 +141,7 @@ class UserController extends ActiveController
             ]);
         }
 
-        return ResponseHelper::failed('Token is not valid');
+        return ResponseHelper::failed(['message' => 'Token is not valid']);
     }
 
     /**
@@ -247,7 +246,7 @@ class UserController extends ActiveController
 
         $user = User::findByEmail($email);
         if (!$user) {
-            return ResponseHelper::failed('The user with this email does not exist.');
+            return ResponseHelper::failed(['message' => 'The user with this email does not exist.']);
         }
 
         $user->generatePasswordResetToken();
@@ -261,7 +260,7 @@ class UserController extends ActiveController
             ->setHtmlBody($this->render('@rest/versions/v1/views/resetPassword', compact('user')))
             ->send();
 
-        return ResponseHelper::success('An email has been sent message.');
+        return ResponseHelper::success(['message' => 'An email has been sent message.']);
     }
 
     /**
@@ -272,17 +271,17 @@ class UserController extends ActiveController
     public function actionChangePassword()
     {
         $password = Yii::$app->request->post('password');
-        $resetToken = Yii::$app->request->post('reset-token');
+        $resetToken = Yii::$app->request->post('resetToken');
 
-        if($resetToken && $password && $user = User::findByPasswordResetToken($resetToken)) {
+        if ($resetToken && $password && $user = User::findByPasswordResetToken($resetToken)) {
             $user->setPassword($password);
             $user->clearPasswordResetToken();
 
-            if($user->save(false)) {
-                return ResponseHelper::success('Password was successfully changed.');
+            if ($user->save(false)) {
+                return ResponseHelper::success(['message' => 'Password was successfully changed.']);
             }
         }
 
-        return ResponseHelper::failed('Password reset token not valid.');
+        return ResponseHelper::failed(['message' => 'Password reset token not valid.']);
     }
 }

@@ -59,13 +59,17 @@ return [
                     'pluralize' => false,
                     'extraPatterns' => [
                         'POST login' => 'login',
+                        'OPTIONS login' => 'login',
                         'POST logout' => 'logout',
+                        'OPTIONS logout' => 'options',
                         'POST edit/<id:\d+>' => 'edit',
                         'OPTIONS edit/<id:\d+>' => 'options',
-                        'OPTIONS logout' => 'options',
                         'POST check-authentication' => 'check-authentication',
+                        'OPTIONS check-authentication' => 'options',
                         'POST reset-password' => 'reset-password',
+                        'OPTIONS reset-password' => 'options',
                         'POST change-password' => 'change-password',
+                        'OPTIONS change-password' => 'options',
                     ],
                 ],
                 [

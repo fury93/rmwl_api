@@ -42,13 +42,13 @@ class UserForm extends User
     {
         return [
             ['email', 'isEmailUnique'],
+            ['username', 'unique'],
             ['email', 'email'],
             [['username', 'password_hash', 'email', 'role'], 'required'],
             [['status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'role'], 'string', 'max' => 255],
             [['access_token'], 'string', 'max' => 32],
             [['username', 'password'], 'required', 'on' => self::SCENARIO_LOGIN],
-//            [['username', 'password','email'], 'required', 'on' => self::SCENARIO_REGISTER],
         ];
     }
 
