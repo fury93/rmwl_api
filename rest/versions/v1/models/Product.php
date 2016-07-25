@@ -2,6 +2,8 @@
 
 namespace rest\versions\v1\models;
 
+use rest\versions\v1\helper\FormatHelper;
+use rest\versions\v1\helper\ResponseHelper;
 use Yii;
 use \yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -46,8 +48,11 @@ class Product extends ActiveRecord
             [['vendor_id', 'name', 'code', 'status', 'cost', 'effective_date', 'expiration_date'], 'required'],
             [['vendor_id', 'code', 'effective_date', 'expiration_date', 'created_at', 'updated_at'], 'integer'],
             [['cost', 'cost_per_unit', 'price_per_unit'], 'number'],
-            [['name', 'description', 'status', 'unit_of_measure', 'product_class', 'uom', 'image_path'],
-                'string', 'max' => 255],
+            [
+                ['name', 'description', 'status', 'unit_of_measure', 'product_class', 'uom', 'image_path'],
+                'string',
+                'max' => 255
+            ],
         ];
     }
 
@@ -61,13 +66,41 @@ class Product extends ActiveRecord
         ];
     }
 
+    public function fields()
+    {
+        return [
+            'id',
+            'vendor_id',
+            'name',
+            'code',
+            'description',
+            'status',
+            'unit_of_measure',
+            'product_class',
+            'uom',
+            'cost',
+            'cost_per_unit',
+            'price_per_unit',
+            'image_path',
+            'effective_date' => function () {
+                return date('m/d/y', $this->effective_date);
+            },
+            'expiration_date' => function () {
+                return date('m/d/y', $this->expiration_date);
+            }
+        ];
+    }
+
     /**
      * Add new or update existing product
      * @return bool
      */
     public function insertProduct()
     {
-        if($this->validate() &&  $this->save()) {
+        $this->expiration_date = FormatHelper::toTimestamp($this->expiration_date);
+        $this->effective_date = FormatHelper::toTimestamp($this->effective_date);
+
+        if ($this->validate() && $this->save()) {
             return true;
         }
 

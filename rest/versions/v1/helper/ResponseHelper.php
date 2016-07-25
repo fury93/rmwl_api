@@ -4,7 +4,6 @@ namespace rest\versions\v1\helper;
 
 class ResponseHelper
 {
-
     const STATUS_SUCCESS = 'success';
     const STATUS_FAILED = 'error';
 
