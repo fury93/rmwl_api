@@ -35,10 +35,10 @@ class PermissionController extends ActiveController
      * @return bool
      * @throws \rest\versions\v1\helper\ForbiddenHttpException
      */
-    /*    public function beforeAction($action)
-        {
-            return parent::beforeAction($action) ? ActionsHelper::ifActionAccess($action) : false;
-        }*/
+    public function beforeAction($action)
+    {
+        return parent::beforeAction($action) ? ActionsHelper::ifActionAccess($action) : false;
+    }
 
     /**
      * Return List with permissions by modules

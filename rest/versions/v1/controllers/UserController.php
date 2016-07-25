@@ -7,6 +7,7 @@ use rest\versions\v1\models\LoginForm;
 use rest\versions\v1\models\Role;
 use rest\versions\v1\models\User;
 use rest\versions\v1\models\UserForm;
+use rest\versions\v1\models\Vendor;
 use yii\web\ForbiddenHttpException;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -134,14 +135,28 @@ class UserController extends ActiveController
         if ($accessToken && $userData = User::findIdentityByAccessToken($accessToken)) {
             $userConfigs = UserForm::getUserConfigurations($userData);
             $roles = Role::getRolesValues();
+            $vendorStatus = Vendor::getVendorsStatuses();
 
             return ResponseHelper::success([
                 'user' => $userConfigs,
-                'roles' => $roles
+                'roles' => $roles,
+                'vendorStatus' => $vendorStatus
             ]);
         }
 
         return ResponseHelper::failed(['message' => 'Token is not valid']);
+    }
+
+    /**
+     * Prepare data for index
+     *
+     * @return array
+     */
+    public function prepareDataProvider()
+    {
+        $users = UserForm::getUsersList();
+
+        return ResponseHelper::success($users);
     }
 
     /**
@@ -224,18 +239,6 @@ class UserController extends ActiveController
     }
 
     /**
-     * Prepare data for index
-     *
-     * @return array
-     */
-    public function prepareDataProvider()
-    {
-        $users = UserForm::getUsersList();
-
-        return ResponseHelper::success($users);
-    }
-
-    /**
      * Action for reset password
      *
      * @return array
@@ -283,5 +286,17 @@ class UserController extends ActiveController
         }
 
         return ResponseHelper::failed(['message' => 'Password reset token not valid.']);
+    }
+
+    /**
+     * Get users list for select's
+     *
+     * @return array
+     */
+    public function actionUsersList()
+    {
+        $users = UserForm::getUsersListSelect();
+
+        return ResponseHelper::success($users);
     }
 }

@@ -25,6 +25,10 @@ class ActionsHelper {
             //unique will be
             $actionName = $action->id . ucfirst($controller);
 
+            if(in_array($actionName, Permissions::getAvailablePermission())) {
+                return true;
+            }
+
             if(!\Yii::$app->user->can($actionName) || Permissions::isForbiddenActionForUser($actionName)) {
                 throw new ForbiddenHttpException('Access denied ' . $action->id . ucfirst($controller));
             }

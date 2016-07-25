@@ -171,4 +171,15 @@ class UserForm extends User
 
         return $userInfo;
     }
+
+    public static function getUsersListSelect()
+    {
+        $users = UserForm::find()
+            ->select('id as value, username as label')
+            ->where(['status' => self::STATUS_ACTIVE])
+            ->asArray()
+            ->all();
+
+        return $users;
+    }
 }

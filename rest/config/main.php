@@ -70,12 +70,36 @@ return [
                         'OPTIONS reset-password' => 'options',
                         'POST change-password' => 'change-password',
                         'OPTIONS change-password' => 'options',
+                        'OPTIONS users-list' => 'options',
+                        'GET users-list' => 'users-list',
                     ],
                 ],
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
                         'v1/product'
+                    ],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST edit/<id:\d+>' => 'edit',
+                        'OPTIONS edit/<id:\d+>' => 'options',
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/location'
+                    ],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST edit/<id:\d+>' => 'edit',
+                        'OPTIONS edit/<id:\d+>' => 'options',
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/vendor'
                     ],
                     'pluralize' => false,
                     'extraPatterns' => [

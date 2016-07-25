@@ -133,7 +133,13 @@ class RbacController extends Controller
         $authManager->addChild($management, $logoutUser);
         $authManager->addChild($inventoryManagement, $logoutUser);
 
-        //Need add permission for patient role
+        //Permissions for permission actions
+        $authManager->addChild($admin, $rolesPermission);
+        $authManager->addChild($admin, $updateRolesPermission);
+        $authManager->addChild($admin, $userPermission);
+        $authManager->addChild($admin, $updateUserPermission);
+        //Get list of user
+        $authManager->addChild($admin, $indexUser);
 
     }
 

@@ -73,6 +73,20 @@ class Permissions
     }
 
     /**
+     * This permissions will be able for all auth users (all roles)
+     *
+     * @return array
+     */
+    public static function getAvailablePermission()
+    {
+        return [
+            'users-listUser'
+        ];
+    }
+
+    /**
+     * Array with permissions, which will be deleted from roles/user permissions list before will be send to client
+     *
      * @return array
      */
     public static function getAdditionalPermission()

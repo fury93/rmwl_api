@@ -15,7 +15,13 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $code
  * @property string $description
  * @property string $status
+ * @property string $unit_of_measure
+ * @property string $product_class
+ * @property string $uom
  * @property double $cost
+ * @property double $cost_per_unit
+ * @property double $price_per_unit
+ * @property string $image_path
  * @property integer $effective_date
  * @property integer $expiration_date
  * @property integer $created_at
@@ -39,8 +45,9 @@ class Product extends ActiveRecord
         return [
             [['vendor_id', 'name', 'code', 'status', 'cost', 'effective_date', 'expiration_date'], 'required'],
             [['vendor_id', 'code', 'effective_date', 'expiration_date', 'created_at', 'updated_at'], 'integer'],
-            [['cost'], 'number'],
-            [['name', 'description', 'status'], 'string', 'max' => 255],
+            [['cost', 'cost_per_unit', 'price_per_unit'], 'number'],
+            [['name', 'description', 'status', 'unit_of_measure', 'product_class', 'uom', 'image_path'],
+                'string', 'max' => 255],
         ];
     }
 
@@ -55,6 +62,7 @@ class Product extends ActiveRecord
     }
 
     /**
+     * Add new or update existing product
      * @return bool
      */
     public function insertProduct()
