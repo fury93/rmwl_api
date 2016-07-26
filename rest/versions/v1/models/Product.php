@@ -36,7 +36,7 @@ class Product extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'products';
+        return 'product';
     }
 
     /**
@@ -89,6 +89,22 @@ class Product extends ActiveRecord
                 return date('m/d/y', $this->expiration_date);
             }
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProductLocations()
+    {
+        return $this->hasMany(ProductLocation::className(), ['product_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProductVendors()
+    {
+        return $this->hasMany(ProductVendor::className(), ['product_id' => 'id']);
     }
 
     /**

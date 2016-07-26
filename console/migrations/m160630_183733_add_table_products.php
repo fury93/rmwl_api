@@ -8,7 +8,7 @@ class m160630_183733_add_table_products extends Migration
     public function up()
     {
         $this->createTable(
-            '{{%products}}',
+            '{{%product}}',
             [
                 'id' => Schema::TYPE_PK,
                 'vendor_id' => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -33,7 +33,7 @@ class m160630_183733_add_table_products extends Migration
 
     public function down()
     {
-        $this->dropTable('{{%products}}');
+        $this->dropTable('{{%product}}');
     }
 
 }

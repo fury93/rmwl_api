@@ -57,6 +57,22 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPatient()
+    {
+        return $this->hasOne(Patient::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserLocations()
+    {
+        return $this->hasMany(UserLocation::className(), ['user_id' => 'id']);
+    }
+
+    /**
      * @inheritdoc
      */
     public function rules()

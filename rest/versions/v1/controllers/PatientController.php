@@ -24,6 +24,7 @@ class PatientController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        unset($behaviors['rateLimiter']);
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
             'except' => ['options'],

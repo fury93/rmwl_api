@@ -52,6 +52,22 @@ class Location extends ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProductLocations()
+    {
+        return $this->hasMany(ProductLocation::className(), ['location_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserLocations()
+    {
+        return $this->hasMany(UserLocation::className(), ['location_id' => 'id']);
+    }
+
+    /**
      * Add new or update existing location
      * @return bool
      */

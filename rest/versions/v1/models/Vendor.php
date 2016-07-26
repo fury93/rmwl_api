@@ -59,6 +59,14 @@ class Vendor extends ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProductVendors()
+    {
+        return $this->hasMany(ProductVendor::className(), ['vendor_id' => 'id']);
+    }
+
+    /**
      * Return array with all vendor statuses
      *
      * @return array

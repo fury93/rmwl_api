@@ -3,7 +3,6 @@
 use yii\db\Migration;
 use yii\db\Schema;
 
-
 class m160711_113749_add_table_patient extends Migration
 {
     public function up()
@@ -11,8 +10,7 @@ class m160711_113749_add_table_patient extends Migration
         $this->createTable(
             '{{%patient}}',
             [
-                'id' => Schema::TYPE_PK,
-                'user_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'user_id' => Schema::TYPE_INTEGER . ' NOT NULL UNIQUE',
                 'last_name' => Schema::TYPE_STRING . ' NOT NULL ',
                 'first_name' => Schema::TYPE_STRING . ' NOT NULL ',
                 'middle_name' => Schema::TYPE_STRING . ' DEFAULT NULL ', //middle initial
@@ -30,6 +28,16 @@ class m160711_113749_add_table_patient extends Migration
                 'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                 'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
             ]
+        );
+
+        $this->addForeignKey(
+            'patient_user_id',
+            '{{%patient}}',
+            'user_Id',
+            '{{%user}}',
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
     }
 
