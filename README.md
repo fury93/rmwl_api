@@ -1,10 +1,16 @@
 ###INSTALLATION
 
+** Clone the Repo **
+Clone the repo to a directory and `cd rmwl_api`
+
 **Install via Composer**
 
+[Install composer](http://https://getcomposer.org/download/).
+
 ```
-composer global require fxp/composer-asset-plugin --no-plugins
-composer update --prefer-dist
+#from rmwl_api dir
+./composer.phar global require fxp/composer-asset-plugin --no-plugins
+./composer.phar update --prefer-dist
 ```
 
 ###GETTING STARTED
