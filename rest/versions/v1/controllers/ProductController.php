@@ -78,6 +78,7 @@ class ProductController extends ActiveController
         $model = new Product();
 
         $params = \Yii::$app->getRequest()->getBodyParams();
+        $model->setLocations($params);
 
         if ($model->load($params, '') && $model->insertProduct()) {
             return ResponseHelper::success($model);
@@ -95,6 +96,7 @@ class ProductController extends ActiveController
     {
         $model = $this->findModel($id);
         $params = \Yii::$app->getRequest()->getBodyParams();
+        $model->setLocations($params);
 
         if ($model->load($params, '') && $model->insertProduct()) {
             return ResponseHelper::success($model);

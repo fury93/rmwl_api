@@ -91,4 +91,19 @@ class Location extends ActiveRecord
 
         return $locations;
     }
+
+    /**
+     * Get locations list in format value => label
+     *
+     * @return mixed
+     */
+    public static function getLocationsListSelect()
+    {
+        $locations = Location::find()
+            ->select('id as value, name as label')
+            ->asArray()
+            ->all();
+
+        return $locations;
+    }
 }

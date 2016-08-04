@@ -86,9 +86,9 @@ class UserController extends ActiveController
         $params = \Yii::$app->request->getBodyParams();
 
         if ($model->load($params, '') && $model->login()) {
-            $userConfigs = UserForm::getUserConfigurations();
+            $configs = UserForm::getConfigurations();
 
-            return ResponseHelper::success(['user' => $userConfigs]);
+            return ResponseHelper::success($configs);
         }
 
         return ResponseHelper::failed(['message' => 'Password or login not correct']);
@@ -118,15 +118,9 @@ class UserController extends ActiveController
         $accessToken = Yii::$app->request->post('token');
 
         if ($accessToken && $userData = User::findIdentityByAccessToken($accessToken)) {
-            $userConfigs = UserForm::getUserConfigurations($userData);
-            $roles = Role::getRolesValues();
-            $vendorStatus = Vendor::getVendorsStatuses();
+            $configs = UserForm::getConfigurations($userData);
 
-            return ResponseHelper::success([
-                'user' => $userConfigs,
-                'roles' => $roles,
-                'vendorStatus' => $vendorStatus
-            ]);
+            return ResponseHelper::success($configs);
         }
 
         return ResponseHelper::failed(['message' => 'Token is not valid']);

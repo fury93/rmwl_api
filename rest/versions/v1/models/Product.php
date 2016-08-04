@@ -7,6 +7,7 @@ use rest\versions\v1\helper\ResponseHelper;
 use Yii;
 use \yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use voskobovich\behaviors\ManyToManyBehavior;
 
 /**
  * This is the model class for table "products".
@@ -31,6 +32,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class Product extends ActiveRecord
 {
+    protected $locations;
+
     /**
      * @inheritdoc
      */
@@ -53,6 +56,7 @@ class Product extends ActiveRecord
                 'string',
                 'max' => 255
             ],
+            [['location_ids'], 'each', 'rule' => ['integer']]
         ];
     }
 
@@ -63,6 +67,12 @@ class Product extends ActiveRecord
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => ManyToManyBehavior::className(),
+                'relations' => [
+                    'location_ids' => 'locations',
+                ],
+            ],
         ];
     }
 
@@ -82,6 +92,7 @@ class Product extends ActiveRecord
             'cost_per_unit',
             'price_per_unit',
             'image_path',
+            'locations',
             'effective_date' => function () {
                 return date('m/d/y', $this->effective_date);
             },
@@ -94,9 +105,12 @@ class Product extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProductLocations()
+    public function getLocations()
     {
-        return $this->hasMany(ProductLocation::className(), ['product_id' => 'id']);
+        return $this->hasMany(Location::className(), ['id' => 'location_id'])
+            ->viaTable('product_location', ['product_id' => 'id']);
+
+        //return $this->hasMany(ProductLocation::className(), ['product_id' => 'id']);
     }
 
     /**
@@ -132,7 +146,25 @@ class Product extends ActiveRecord
     {
         $products = Product::find()->all();
 
+        foreach($products as $product) {
+            $product->locations = $product->location_ids;
+        }
+
         return $products;
+    }
+
+    /**
+     * Set locations_id field. Get params from request.
+     *
+     * @param $params
+     */
+    public function setLocations($params)
+    {
+        if(!$params) {
+            $params = \Yii::$app->getRequest()->getBodyParams();
+        }
+
+        $this->location_ids = $params['locations'];
     }
 
 }

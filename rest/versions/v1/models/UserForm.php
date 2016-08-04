@@ -111,17 +111,37 @@ class UserForm extends User
     }
 
     /**
-     * Return information about user, configurations after login
+     * Return base user configurations and constant information for application
      *
      * @return array
      */
-    public static function getUserConfigurations($userData = null)
+    public static function getConfigurations($userData = null)
     {
         if (!$userData) {
             $userData = \Yii::$app->user->identity;
         }
 
-        //todo temp data, add roles and others params
+        $userConfigs = self::getUserConfiguration($userData);
+        $roles = Role::getRolesValues();
+        $vendorStatus = Vendor::getVendorsStatuses();
+        $locations = Location::getLocationsListSelect();
+
+        return [
+            'user' => $userConfigs,
+            'roles' => $roles,
+            'vendorStatus' => $vendorStatus,
+            'locations' => $locations
+        ];
+    }
+
+    /**
+     * Return information about user
+     *
+     * @param $userData
+     * @return array
+     */
+    public static function getUserConfiguration($userData)
+    {
         return [
             'user' => $userData->username,
             'id' => $userData->id,
@@ -172,6 +192,11 @@ class UserForm extends User
         return $userInfo;
     }
 
+    /**
+     * Get users list in format value => label
+     *
+     * @return mixed
+     */
     public static function getUsersListSelect()
     {
         $users = UserForm::find()
